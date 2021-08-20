@@ -6,11 +6,12 @@ import (
 
 func main() {
 	// 凑钱
-	money := 15
-	s := []int{1, 5, 11}
-	fmt.Println("结果数组为", getLestNumForMoney(money, s))
+	//fmt.Println("结果数组为:", getLestNumForMoney(15, []int{1, 5, 11}))
 
-	// 最长上升子序列
+	// 回文子串数量
+	s1 := "abcccba"
+	fmt.Println(fmt.Sprintf("%s的回文数量:%d", s1, getHuiWenNumber(s1)))
+	fmt.Println(fmt.Sprintf("%s的回文数量(双指针):%d", s1, getHuiWenNumberV2(s1)))
 }
 
 // 典型的动态规划，尽量少的张数n凑出足额的钱w，给定面额数组s
@@ -30,10 +31,69 @@ func getLestNumForMoney(w int, s []int) (res []int) {
 	return res
 }
 
-// 获取最长上升子序列
-// 思路：f(x)=f(x-1)+x>x-1?x:忽略
-func getLIS(s []int) (res []int) {
-	res = []int{}
+// 获取一段字符串的回文数量
+func getHuiWenNumber(str string) (res int) {
+	s := []byte(str)
+	dp := make([][]bool, len(s))
+	// 不定长二维数组初始化
+	for i := 0; i < len(s); i++ {
+		dp[i] = make([]bool, len(s))
+	}
+	// 算法
+	for i := len(s) - 1; i >= 0; i-- { // 注意遍历顺序
+		for j := i; j < len(s); j++ {
+			if s[i] == s[j] {
+				if j-i <= 1 {
+					res++
+					dp[i][j] = true
+				} else if dp[i+1][j-1] {
+					res++
+					dp[i][j] = true
+				}
+			}
+		}
 
+	}
+	fmt.Println(dp)
 	return res
+}
+
+// 获取一段字符串的回文数量,双指针法
+func getHuiWenNumberV2(str string) (res int) {
+	s := []byte(str)
+	for i := 0; i < len(s); i++ {
+		// 为中心
+		j1 := i
+		j2 := i
+		for j1 >= 0 && j2 < len(s) {
+			if s[j1] == s[j2] {
+				res++
+			} else {
+				break
+			}
+			j1--
+			j2++
+		}
+		j1 = i
+		j2 = i + 1
+		for j1 >= 0 && j2 < len(s) {
+			if s[j1] == s[j2] {
+				res++
+			} else {
+				break
+			}
+			j1--
+			j2++
+		}
+
+	}
+	return res
+}
+
+// 比大小
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }
